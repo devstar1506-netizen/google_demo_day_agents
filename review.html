@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PR Reviewer — MCP Agent System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0f19;
+            --glass: rgba(20, 25, 40, 0.5);
+            --border: rgba(255, 255, 255, 0.08);
+            --cyan: #00ddff;
+            --purple: #b300ff;
+            --green: #22c55e;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 3rem 1.5rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before, body::after {
+            content: '';
+            position: fixed;
+            width: 500px; height: 500px; border-radius: 50%;
+            filter: blur(100px); opacity: 0.18; z-index: -1;
+            animation: drift 18s infinite alternate ease-in-out;
+        }
+        body::before { background: var(--purple); top: -150px; left: -150px; }
+        body::after { background: var(--cyan); bottom: -150px; right: -150px; animation-delay: -9s; }
+        @keyframes drift { 0% { transform: translate(0,0); } 100% { transform: translate(100px, 60px); } }
+
+        .container { width: 100%; max-width: 880px; display: flex; flex-direction: column; gap: 2rem; }
+        header { text-align: center; }
+        header a { display: inline-block; margin-bottom: 1.5rem; color: var(--muted); font-size: 0.9rem; text-decoration: none; }
+        header a:hover { color: var(--cyan); }
+        h1 {
+            font-size: 2.4rem; font-weight: 700;
+            background: linear-gradient(to right, var(--cyan), var(--purple));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        h1 span { display: block; font-size: 1rem; font-weight: 400; color: var(--muted); margin-top: 0.5rem; -webkit-text-fill-color: var(--muted); }
+
+        .glass {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .input-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .input-group { display: flex; flex-direction: column; gap: 0.4rem; flex: 1; min-width: 200px; }
+        label { font-size: 0.8rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        input {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.9rem 1.2rem;
+            color: var(--text);
+            font-size: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            outline: none;
+            transition: all 0.3s;
+        }
+        input:focus { border-color: var(--cyan); box-shadow: 0 0 12px rgba(0, 221, 255, 0.2); }
+        button#reviewBtn {
+            background: linear-gradient(135deg, var(--cyan), #0066ff);
+            color: #fff; border: none; border-radius: 10px;
+            padding: 0.9rem 2rem; font-weight: 700; font-size: 1rem;
+            cursor: pointer; transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 221, 255, 0.3);
+            align-self: flex-end;
+            white-space: nowrap;
+        }
+        button#reviewBtn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,221,255,0.5); }
+        button#reviewBtn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .model-badge {
+            display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;
+            font-size: 0.8rem; color: var(--muted);
+        }
+        .badge {
+            padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.7rem; font-weight: 700;
+        }
+        .badge.ollama { background: rgba(34, 197, 94, 0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+        .badge.openai { background: rgba(0,188,212,0.15); color: var(--cyan); border: 1px solid rgba(0,188,212,0.3); }
+        .badge.mock { background: rgba(148,163,184,0.15); color: var(--muted); border: 1px solid var(--border); }
+
+        .result-area { flex: 1 1 auto; }
+        .result-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1rem;
+        }
+        .result-header h2 { font-size: 1rem; color: var(--muted); font-weight: 600; }
+        .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--cyan); border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        #reviewOutput {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.88rem;
+            line-height: 1.7;
+            color: #e2e8f0;
+            min-height: 200px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        #reviewOutput h2 { font-family: 'Inter', sans-serif; font-size: 1.1rem; color: var(--cyan); margin: 1rem 0 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+        #reviewOutput hr { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
+        #reviewOutput pre { background: rgba(0,0,0,0.4); border-radius: 8px; padding: 12px; overflow-x: auto; }
+        #reviewOutput code { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; }
+        #reviewOutput strong { color: var(--cyan); }
+        .placeholder { color: var(--muted); font-family: 'Inter', sans-serif; font-style: italic; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="/">← Back to Agent Control Panel</a>
+            <h1>PR Reviewer<span>Powered by local Ollama/codellama LLM · No API key required</span></h1>
+        </header>
+
+        <div class="glass">
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="repoInput">GitHub Repository (owner/name)</label>
+                    <input id="repoInput" type="text" placeholder="devstar1506-netizen/google_demo_day_agents" value="devstar1506-netizen/google_demo_day_agents">
+                </div>
+                <div class="input-group" style="max-width: 160px;">
+                    <label for="prNumberInput">PR Number</label>
+                    <input id="prNumberInput" type="number" placeholder="1" min="1">
+                </div>
+                <button id="reviewBtn">🔍 Analyse PR</button>
+            </div>
+            <div class="model-badge" style="margin-top:1rem;">
+                LLM Backend Priority: <span class="badge ollama">1. Ollama/codellama (local)</span>
+                <span class="badge openai">2. OpenAI gpt-4o-mini</span>
+                <span class="badge mock">3. Mock Fallback</span>
+            </div>
+        </div>
+
+        <div class="glass result-area">
+            <div class="result-header">
+                <h2>AGENT REVIEW OUTPUT</h2>
+                <div class="spinner" id="spinner"></div>
+            </div>
+            <div id="reviewOutput">
+                <span class="placeholder">Enter a repository and PR number above to begin the review...</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const btn = document.getElementById('reviewBtn');
+        const output = document.getElementById('reviewOutput');
+        const spinner = document.getElementById('spinner');
+
+        function renderMarkdown(text) {
+            return text
+                .replace(/^## (.*)/gm, '<h2>$1</h2>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/`([^`]+)`/g, '<code>$1</code>')
+                .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+                .replace(/^---$/gm, '<hr>')
+                .replace(/\n/g, '<br>');
+        }
+
+        btn.addEventListener('click', async () => {
+            const prNumber = document.getElementById('prNumberInput').value.trim();
+            const repo = document.getElementById('repoInput').value.trim();
+
+            if (!prNumber) { output.innerHTML = '<span class="placeholder">Please enter a PR number.</span>'; return; }
+
+            btn.disabled = true;
+            spinner.style.display = 'block';
+            output.innerHTML = '<span class="placeholder">⏳ Fetching PR diff from GitHub and routing through agents...</span>';
+
+            try {
+                const resp = await fetch('/api/review-pr', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pr_number: prNumber, repo: repo })
+                });
+                const data = await resp.json();
+
+                if (!resp.ok || data.error) {
+                    output.innerHTML = `<span style="color:#f87171">❌ Error: ${data.error}</span>`;
+                } else {
+                    output.innerHTML = renderMarkdown(data.result);
+                }
+            } catch (err) {
+                output.innerHTML = `<span style="color:#f87171">❌ Could not reach the Python server: ${err.message}</span>`;
+            } finally {
+                btn.disabled = false;
+                spinner.style.display = 'none';
+            }
+        });
+
+        document.getElementById('prNumberInput').addEventListener('keypress', e => {
+            if (e.key === 'Enter') btn.click();
+        });
+    </script>
+</body>
+</html>
