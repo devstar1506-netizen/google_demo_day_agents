@@ -19,7 +19,7 @@ For a deep dive into the logic, see [ARCHITECTURE.md](ARCHITECTURE.md).
 - **GitHub Integration**: Automated PR reviews via `gh` CLI.
 - **Dynamic Skills**: Agents load capabilities from Markdown files.
 
-## ��️ Quick Start
+## 🛠️ Quick Start
 1. Install dependencies: `pip install openai` (optional) and install [Ollama](https://ollama.com).
 2. Start the backend: `python3 server.py`.
 3. Open UI: `http://localhost:8000`.
