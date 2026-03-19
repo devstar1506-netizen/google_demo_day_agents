@@ -1,9 +1,9 @@
 :root {
-    --bg-color: #0b0f19;
-    --glass-bg: rgba(20, 25, 40, 0.4);
+    --bg-color: #1a0505;
+    --glass-bg: rgba(40, 10, 10, 0.4);
     --glass-border: rgba(255, 255, 255, 0.08);
     --accent-cyan: #0df;
-    --accent-purple: #b300ff;
+    --accent-purple: #ff3366;
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
     --idle: #64748b;
