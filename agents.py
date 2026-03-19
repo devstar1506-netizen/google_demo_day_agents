@@ -23,8 +23,35 @@ class Agent:
             self.skill_instructions += f"\n- {skill}"
             
     def execute_task(self, task: str) -> str:
+        # Check if OpenAI is available and configured
+        if os.getenv("OPENAI_API_KEY"):
+            try:
+                import openai
+                client = openai.OpenAI()
+                
+                system_prompt = f"You are a highly experienced specialized agent named '{self.name}'.\n"
+                if self.skill_instructions:
+                    system_prompt += f"Here are your primary responsibilities and instructions:\n{self.skill_instructions}\n"
+                system_prompt += "Review the task thoroughly and respond intelligently, clearly, and concisely. Use markdown."
+                
+                response = client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": task}
+                    ],
+                    max_tokens=600
+                )
+                
+                return response.choices[0].message.content.strip()
+            except ImportError:
+                return f"[SIMULATED] (Please run 'pip install openai' to use the LLM backend.)\n {self.name} received task: '{task}'"
+            except Exception as e:
+                return f"[API ERROR: {e}]\n Fallback: {self.name} received task: '{task}'"
+                
+        # Default simulated fallback if no API KEY is found
         skills_str = ", ".join(self.skills) if self.skills else "no specific skills"
-        return f"{self.name} (using skills: [{skills_str}]) received task: '{task}'"
+        return f"[MOCK] {self.name} (using skills: [{skills_str}]) completed task: '{task}'"
 
 class SecurityAgent(Agent):
     def __init__(self):
@@ -51,15 +78,15 @@ class MainAgent(Agent):
         self.python_standards = PythonCodingStandards()
         
     def delegate(self, task: str, agent: Agent) -> str:
-        return f"{self.name} is delegating to {agent.name}...\n  -> Result: {agent.execute_task(task)}"
+        result = agent.execute_task(task)
+        return (f"{self.name} delegated task to {agent.name}...\n"
+                f"--- {agent.name} Result ---\n"
+                f"{result}\n"
+                f"-------------------------------------\n")
 
 if __name__ == "__main__":
+    print("Welcome to the Agent Framework!")
+    if not os.getenv("OPENAI_API_KEY"):
+        print(">> No OPENAI_API_KEY detected. Running in MOCK mode.")
     main = MainAgent()
-    print("Agents successfully initialized with skills loaded from Markdown files.\n")
-    print(main.delegate("Audit code repository for secrets", main.security_agent))
-    print(main.delegate("Write tests for authentication", main.python_coder))
-    
-    # Example of adding a new skill dynamically
-    print("\nAdding 'multi_cloud_architecture' skill to DevOps Deployment Agent...")
-    main.devops_agent.add_skill("multi_cloud_architecture")
-    print(main.delegate("Design scalable microservices", main.devops_agent))
+    print(main.delegate("Please audit the authentication pipeline.", main.security_agent))
