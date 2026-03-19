@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Agent Control Panel interface">
+    <title>MCP Agent Control Panel</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-effect"></div>
+    <div class="app-container">
+        <header>
+            <h1>MCP Agent System</h1>
+            <p>Orchestrating intelligent agent interactions visually</p>
+        </header>
+        
+        <main>
+            <section class="task-input-section glass-panel">
+                <input type="text" id="taskInput" placeholder="Enter a task (e.g., 'Deploy server', 'Audit security', 'Write code')..." aria-label="Task Input">
+                <button id="dispatchBtn">Dispatch Task</button>
+            </section>
+
+            <section class="agents-grid">
+                <!-- Agent Cards -->
+                <div class="agent-card glass-panel" id="agent-main">
+                    <h2>Main Agent</h2>
+                    <p class="role">Chief Orchestrator</p>
+                    <div class="status indicator-idle">Idle</div>
+                </div>
+                <div class="agent-card glass-panel" id="agent-security">
+                    <h2>Security Agent</h2>
+                    <p class="role">Auditor & Verifier</p>
+                    <div class="status indicator-idle">Idle</div>
+                </div>
+                <div class="agent-card glass-panel" id="agent-devops">
+                    <h2>DevOps Agent</h2>
+                    <p class="role">Deployment Manager</p>
+                    <div class="status indicator-idle">Idle</div>
+                </div>
+                <div class="agent-card glass-panel" id="agent-coder">
+                    <h2>Python Coder</h2>
+                    <p class="role">Software Developer</p>
+                    <div class="status indicator-idle">Idle</div>
+                </div>
+                <div class="agent-card glass-panel" id="agent-standards">
+                    <h2>Standards Agent</h2>
+                    <p class="role">Quality Enforcer</p>
+                    <div class="status indicator-idle">Idle</div>
+                </div>
+            </section>
+
+            <section class="terminal-section glass-panel">
+                <div class="terminal-header">
+                    <span class="dot red"></span>
+                    <span class="dot yellow"></span>
+                    <span class="dot green"></span>
+                    <span class="terminal-title">System Execution Log</span>
+                </div>
+                <div class="terminal-output" id="terminalOutput">
+                    <div class="log-entry sys">> System initialized. All agents online.</div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
