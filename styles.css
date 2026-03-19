@@ -263,6 +263,111 @@ button:active {
     color: var(--accent-purple);
 }
 
+/* Tab Navigation */
+.tab-nav {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+.tab-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    padding: 0.6rem 1.5rem;
+    border-radius: 999px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.tab-btn.active {
+    background: rgba(255, 51, 102, 0.2);
+    border-color: var(--accent-purple);
+    color: #fff;
+    box-shadow: 0 0 15px rgba(255, 51, 102, 0.3);
+}
+.tab-btn:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.tab-content {
+    display: none;
+    flex-direction: column;
+    gap: 2rem;
+}
+.tab-content.active {
+    display: flex;
+}
+
+/* Arcade Room */
+.arcade-room {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem;
+}
+.arcade-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+.arcade-header h2 {
+    font-size: 1.8rem;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+.score-board {
+    display: flex;
+    gap: 1.5rem;
+}
+.score-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+}
+.score-box span {
+    font-size: 1.5rem;
+    color: var(--accent-purple);
+    text-shadow: 0 0 10px rgba(255, 51, 102, 0.5);
+}
+
+.canvas-container {
+    background: #000;
+    border: 4px solid var(--glass-border);
+    border-radius: 8px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.8), inset 0 0 20px rgba(255,51,102,0.1);
+    line-height: 0;
+}
+#snakeCanvas {
+    max-width: 100%;
+}
+
+.arcade-footer {
+    margin-top: 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.arcade-footer p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+}
+#startBtn {
+    background: var(--accent-purple);
+    align-self: center;
+}
+
 @keyframes fadeIn {
     to { opacity: 1; }
 }

@@ -14,10 +14,16 @@
         <header>
             <h1>MCP Agent System</h1>
             <p>Orchestrating intelligent agent interactions visually</p>
+            
+            <nav class="tab-nav">
+                <button class="tab-btn active" data-tab="dashboard">Agent Dashboard</button>
+                <button class="tab-btn" data-tab="arcade">Snake Arcade</button>
+            </nav>
         </header>
         
         <main>
-            <section class="task-input-section glass-panel">
+            <div id="dashboardTab" class="tab-content active">
+                <section class="task-input-section glass-panel">
                 <input type="text" id="taskInput" placeholder="Enter a task (e.g., 'Deploy server', 'Audit security', 'Write code')..." aria-label="Task Input">
                 <button id="dispatchBtn">Dispatch Task</button>
             </section>
@@ -83,8 +89,29 @@
                     <div class="log-entry sys">> System initialized. All agents online.</div>
                 </div>
             </section>
+            </div> <!-- End Dashboard Tab -->
+
+            <div id="arcadeTab" class="tab-content">
+                <section class="glass-panel arcade-room">
+                    <div class="arcade-header">
+                        <h2>Retro Agent Arcade</h2>
+                        <div class="score-board">
+                             <div class="score-box">SCORE <span id="currentScore">000</span></div>
+                             <div class="score-box">HIGH <span id="highScore">000</span></div>
+                        </div>
+                    </div>
+                    <div class="canvas-container">
+                        <canvas id="snakeCanvas"></canvas>
+                    </div>
+                    <div class="arcade-footer">
+                        <p>USE ARROW KEYS TO NAVIGATE THE AGENT-SNAKE</p>
+                        <button id="startBtn">START GAME</button>
+                    </div>
+                </section>
+            </div>
         </main>
     </div>
     <script src="app.js"></script>
+    <script src="snake.js"></script>
 </body>
 </html>
